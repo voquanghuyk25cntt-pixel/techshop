@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - TechShop</title>
+    <meta name="description" content="Giỏ hàng demo tĩnh">
+
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="main-header-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo logo-compact" aria-label="TechShop">
+                <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="0" y="0" width="24" height="24" rx="5" fill="#111827" />
+                    <path d="M6 12h12" stroke="#3fc0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>TechShop</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="san_pham.html" class="nav-link">Cửa Hàng</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="gio_hang.html" class="cart-icon-btn"><i class="fas fa-shopping-cart"></i><span class="cart-badge">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="max-width:1100px; margin:2rem auto;">
+        <h2>Giỏ Hàng Của Bạn</h2>
+
+        <div id="cart-area"></div>
+    </main>
+
+    <script>
+        function formatPrice(v) { return '₫' + Number(v).toLocaleString('vi-VN'); }
+
+        function renderCart() {
+            const cart = getCart();
+            const items = Object.values(cart);
+            const area = document.getElementById('cart-area');
+            if (items.length === 0) {
+                area.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-basket"></i><h3>Giỏ hàng của bạn đang trống!</h3><p>Hãy dạo quanh cửa hàng và chọn sản phẩm bạn thích.</p><a href="san_pham.html" class="btn btn-primary">Mua Sắm Ngay</a></div>`;
+                return;
+            }
+
+            let html = `<table class="cart-table" style="width:100%; border-collapse:collapse;"><thead><tr><th>Sản Phẩm</th><th>Giá</th><th>Số lượng</th><th>Thành tiền</th><th></th></tr></thead><tbody>`;
+            items.forEach(it => {
+                const subtotal = (parseFloat(it.price) || 0) * (it.quantity || 0);
+                html += `<tr data-id="${it.id}"><td><div style="display:flex;align-items:center;gap:12px;"><div style="width:64px;height:64px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;"><i class="fas fa-box-open"></i></div><div>${it.name}</div></div></td><td style="width:140px;">${formatPrice(it.price)}</td><td style="width:160px;"><button class="qty-minus">-</button> <span class="qty">${it.quantity}</span> <button class="qty-plus">+</button></td><td style="text-align:right;">${formatPrice(subtotal)}</td><td style="text-align:center;"><button class="btn-delete">Xóa</button></td></tr>`;
+            });
+            html += `</tbody></table>`;
+            html += `<div style="margin-top:1rem;text-align:right;"><strong>Tổng: ${formatPrice(getCartTotal())}</strong></div>`;
+            html += `<div style="margin-top:1rem;text-align:right;"><a href="#" class="btn btn-primary">Tiến Hành Đặt Hàng (Demo)</a></div>`;
+            area.innerHTML = html;
+
+            // Attach events
+            area.querySelectorAll('.qty-plus').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tr = btn.closest('tr');
+                    const id = tr.dataset.id;
+                    const qtySpan = tr.querySelector('.qty');
+                    const newQty = parseInt(qtySpan.textContent, 10) + 1;
+                    setQuantity(id, newQty);
+                    renderCart();
+                });
+            });
+            area.querySelectorAll('.qty-minus').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tr = btn.closest('tr');
+                    const id = tr.dataset.id;
+                    const qtySpan = tr.querySelector('.qty');
+                    const newQty = parseInt(qtySpan.textContent, 10) - 1;
+                    setQuantity(id, newQty);
+                    renderCart();
+                });
+            });
+            area.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tr = btn.closest('tr');
+                    const id = tr.dataset.id;
+                    removeFromCart(id);
+                    renderCart();
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // main.js exposes cart helpers: getCart, setQuantity, removeFromCart, getCartTotal
+            renderCart();
+        });
+    </script>
+
+    <script defer src="assets/js/main.js"></script>
+</body>
+</html>

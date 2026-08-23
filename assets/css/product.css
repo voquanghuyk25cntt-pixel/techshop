@@ -1,0 +1,186 @@
+/* --------------------------------------------------------
+   DỰ ÁN TECHSHOP - CSS CHO CATALOG SẢN PHẨM & CHI TIẾT
+   File: assets/css/product.css
+   -------------------------------------------------------- */
+
+/* Bố cục trang cửa hàng (Bộ lọc bên trái, Sản phẩm bên phải) */
+.shop-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+}
+
+/* Bộ lọc sản phẩm */
+.filter-sidebar {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+
+.filter-group {
+    margin-bottom: 2rem;
+}
+
+.filter-group h3 {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    border-left: 3px solid var(--primary-color);
+    padding-left: 0.5rem;
+}
+
+.filter-group ul li {
+    margin-bottom: 0.6rem;
+}
+
+.filter-group ul li a {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    padding: 0.2rem 0;
+}
+
+.filter-group ul li a:hover,
+.filter-group ul li.active a {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.filter-btn-clear {
+    display: block;
+    text-align: center;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    padding: 0.6rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--bg-color);
+    cursor: pointer;
+}
+
+/* Chi tiết sản phẩm (chi_tiet_san_pham.php) */
+.product-detail-container {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 3rem;
+}
+
+.product-detail-image-box {
+    background-color: #f8fafc;
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.product-detail-image-box i {
+    font-size: 8rem;
+    color: #cbd5e1;
+}
+
+.product-detail-info h1 {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.product-detail-cat {
+    display: inline-block;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.5rem;
+}
+
+.product-detail-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.product-detail-stock {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stock-status {
+    font-weight: 700;
+}
+
+.stock-in { color: var(--success-color); }
+.stock-out { color: var(--danger-color); }
+
+.product-detail-desc {
+    color: var(--text-color);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-add-to-cart {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 0.9rem 2.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.btn-add-to-cart:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-add-to-cart:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .shop-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-sidebar {
+        position: static;
+    }
+    
+    .product-detail-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1.5rem;
+    }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "name": "Chuột Gaming X100",
+    "price": 299000,
+    "category": "Chuột",
+    "description": "Chuột gaming độ phân giải cao, led RGB, 6 nút chức năng.",
+    "quantity": 120,
+    "image": "assets/images/product1.svg"
+  },
+  {
+    "id": "2",
+    "name": "Bàn Phím Cơ K60",
+    "price": 899000,
+    "category": "Bàn Phím",
+    "description": "Bàn phím cơ switch đỏ, full-size, keycaps PBT.",
+    "quantity": 45,
+    "image": "assets/images/product2.svg"
+  },
+  {
+    "id": "3",
+    "name": "Tai Nghe Pulse 7.1",
+    "price": 599000,
+    "category": "Tai Nghe",
+    "description": "Tai nghe gaming 7.1, mic lọc ồn, đệm thoáng khí.",
+    "quantity": 80,
+    "image": "assets/images/product3.svg"
+  },
+  {
+    "id": "4",
+    "name": "Laptop LearnBook 14",
+    "price": 9990000,
+    "category": "Laptop",
+    "description": "Laptop cho học tập, chip tiết kiệm điện, pin lâu.",
+    "quantity": 10,
+    "image": "assets/images/product4.svg"
+  }
+]

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="100%" height="100%" fill="#f1f5f9" rx="12"/>
+  <g transform="translate(40,36)" fill="#cbd5e1">
+    <rect x="12" y="36" width="296" height="24" rx="4" fill="#eaf2ff"/>
+    <rect x="12" y="70" width="296" height="76" rx="8" fill="#eaf2ff"/>
+    <rect x="70" y="156" width="160" height="12" rx="6" fill="#cbd5e1"/>
+  </g>
+  <text x="20" y="260" font-family="Segoe UI, Arial" font-size="18" fill="#6b7280">Bàn Phím Cơ K60</text>
+</svg>

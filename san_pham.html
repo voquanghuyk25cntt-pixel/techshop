@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechShop - Cửa Hàng</title>
+    <meta name="description" content="Danh sách sản phẩm TechShop - demo tĩnh">
+
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="main-header-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo logo-compact" aria-label="TechShop">
+                <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="0" y="0" width="24" height="24" rx="5" fill="#111827" />
+                    <path d="M6 12h12" stroke="#3fc0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>TechShop</span>
+            </a>
+            <form class="search-form" action="san_pham.html" method="GET">
+                <input type="text" name="q" placeholder="Tìm sản phẩm...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="san_pham.html" class="nav-link">Cửa Hàng</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="gio_hang.html" class="cart-icon-btn"><i class="fas fa-shopping-cart"></i><span class="cart-badge">0</span></a>
+                <a href="#" class="login-btn"><i class="fas fa-sign-in-alt"></i> Đăng Nhập</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="max-width:1200px; margin:2rem auto;">
+        <h1 style="font-size:2rem; margin-bottom:1rem;">Cửa Hàng</h1>
+        <p style="color:#6b7280; margin-bottom:1.5rem;">Khám phá các sản phẩm công nghệ mới nhất.</p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; gap:1rem; flex-wrap:wrap;">
+            <div id="category-list" style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;"></div>
+            <div style="margin-left:auto;"><input id="search-input" type="text" placeholder="Tìm sản phẩm..." style="padding:0.5rem 0.75rem; border-radius:8px; border:1px solid var(--border-color);"></div>
+        </div>
+
+        <div class="product-grid" id="product-grid">
+            <!-- Products will be loaded from assets/data/products.json -->
+        </div>
+
+        <script>
+            function qs(name) { const p = new URLSearchParams(location.search); return p.get(name); }
+            function formatPrice(v) { return '₫' + Number(v).toLocaleString('vi-VN'); }
+
+            let ALL_PRODUCTS = [];
+            let CURRENT_CATEGORY = qs('category') || 'all';
+
+            function renderCategories(categories) {
+                const wrap = document.getElementById('category-list');
+                wrap.innerHTML = '';
+                const allBtn = document.createElement('button');
+                allBtn.className = 'btn btn-outline';
+                allBtn.textContent = 'Tất cả';
+                allBtn.dataset.cat = 'all';
+                if (CURRENT_CATEGORY === 'all') allBtn.classList.add('active');
+                allBtn.addEventListener('click', () => selectCategory('all'));
+                wrap.appendChild(allBtn);
+
+                categories.forEach(cat => {
+                    const b = document.createElement('button');
+                    b.className = 'btn btn-secondary';
+                    b.textContent = cat;
+                    b.dataset.cat = cat;
+                    if (cat === CURRENT_CATEGORY) { b.classList.add('active'); }
+                    b.addEventListener('click', () => selectCategory(cat));
+                    wrap.appendChild(b);
+                });
+            }
+
+            function selectCategory(cat) {
+                CURRENT_CATEGORY = cat;
+                // update URL without reload
+                const url = new URL(location.href);
+                if (cat === 'all') url.searchParams.delete('category'); else url.searchParams.set('category', cat);
+                history.replaceState(null, '', url.toString());
+                // update active classes
+                document.querySelectorAll('#category-list .btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('#category-list .btn').forEach(btn => { if (btn.dataset.cat === cat) btn.classList.add('active'); });
+                renderProducts();
+            }
+
+            function matchesSearch(p, q) {
+                if (!q) return true;
+                q = q.toLowerCase();
+                return p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+            }
+
+            function renderProducts() {
+                const grid = document.getElementById('product-grid');
+                grid.innerHTML = '';
+                const q = document.getElementById('search-input')?.value || '';
+                const filtered = ALL_PRODUCTS.filter(p => (CURRENT_CATEGORY === 'all' || p.category === CURRENT_CATEGORY) && matchesSearch(p, q));
+                if (filtered.length === 0) {
+                    grid.innerHTML = '<div class="cart-empty"><h3>Không tìm thấy sản phẩm.</h3></div>';
+                    return;
+                }
+                filtered.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="product-image">${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy" class="product-thumb" />` : '<i class="fas fa-box-open" style="font-size:48px;color:#cbd5e1;"></i>'}</div>
+                        <div class="product-body">
+                            <h3>${p.name}</h3>
+                            <p class="muted">${p.description}</p>
+                            <div class="price">${formatPrice(p.price)}</div>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <a href="chi_tiet_san_pham.html?id=${p.id}" class="btn btn-secondary">Chi tiết</a>
+                                <button class="btn btn-primary" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" onclick="addToCartFromButton(this)">Thêm giỏ</button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', async function() {
+                try {
+                    const res = await fetch('assets/data/products.json');
+                    const data = await res.json();
+                    ALL_PRODUCTS = data;
+                    // compute unique categories
+                    const cats = Array.from(new Set(data.map(p => p.category))).sort();
+                    renderCategories(cats);
+                    // set search
+                    const searchInput = document.getElementById('search-input');
+                    searchInput.addEventListener('input', renderProducts);
+                    // if category in query, ensure selected
+                    if (qs('category')) { CURRENT_CATEGORY = qs('category'); }
+                    renderProducts();
+                } catch (e) {
+                    console.error('Failed to load products.json', e);
+                }
+            });
+        </script>
+    </main>
+
+    <script defer src="assets/js/main.js"></script>
+</body>
+</html>

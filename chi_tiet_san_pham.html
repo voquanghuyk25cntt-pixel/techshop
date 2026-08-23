@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sản Phẩm - TechShop</title>
+    <meta name="description" content="Chi tiết sản phẩm">
+
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="main-header-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo logo-compact" aria-label="TechShop">
+                <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="0" y="0" width="24" height="24" rx="5" fill="#111827" />
+                    <path d="M6 12h12" stroke="#3fc0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>TechShop</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="san_pham.html" class="nav-link">Cửa Hàng</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="gio_hang.html" class="cart-icon-btn"><i class="fas fa-shopping-cart"></i><span class="cart-badge">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="max-width:1100px; margin:2rem auto;">
+        <div id="product-detail">
+            <div class="breadcrumb"><a href="index.html">Trang Chủ</a> / <a href="san_pham.html">Cửa Hàng</a> / <span id="breadcrumb-cat">Sản Phẩm</span></div>
+            <div class="product-detail-container" style="display:grid; grid-template-columns: 380px 1fr; gap:2rem; margin-top:1rem;">
+                <div class="product-detail-image-box" id="detail-image" style="background:#f8fafc; display:flex; align-items:center; justify-content:center; height:380px;">
+                    <i class="fas fa-laptop" style="font-size:64px;color:#cbd5e1;"></i>
+                </div>
+                <div class="product-detail-info">
+                    <span class="product-detail-cat" id="detail-cat">Danh Mục</span>
+                    <h1 id="detail-name">Tên Sản Phẩm</h1>
+                    <div class="product-detail-price" id="detail-price" style="font-weight:800;color:#2563eb;">₫0</div>
+                    <div class="product-detail-stock" id="detail-stock">Tình trạng kho hàng: <span id="stock-text">Còn hàng</span></div>
+
+                    <div style="margin-top:1rem; display:flex; gap:1rem; align-items:center;">
+                        <input type="number" id="quantity_input" value="1" min="1" style="width:100px; padding:0.5rem;">
+                        <button id="btn-add" class="btn btn-primary">Thêm Vào Giỏ Hàng</button>
+                    </div>
+
+                    <div class="product-detail-desc" style="margin-top:1.5rem;">
+                        <h3>Mô tả sản phẩm</h3>
+                        <p id="detail-desc">Mô tả chi tiết sẽ hiển thị ở đây.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function qs(name) { const params = new URLSearchParams(location.search); return params.get(name); }
+        function formatPrice(v) { return '₫' + Number(v).toLocaleString('vi-VN'); }
+
+        async function loadProductDetail() {
+            try {
+                const res = await fetch('assets/data/products.json');
+                const list = await res.json();
+                const map = {};
+                list.forEach(p => map[p.id] = p);
+                const id = qs('id') || '1';
+                const p = map[id];
+                if (!p) return;
+
+                document.getElementById('detail-name').textContent = p.name;
+                document.getElementById('detail-price').textContent = formatPrice(p.price);
+                document.getElementById('detail-desc').textContent = p.description;
+                document.getElementById('detail-cat').textContent = p.category;
+                document.getElementById('breadcrumb-cat').textContent = p.category;
+                document.getElementById('stock-text').textContent = p.quantity > 0 ? 'Còn hàng (' + p.quantity + ')' : 'Hết hàng';
+
+                const btn = document.getElementById('btn-add');
+                btn.dataset.id = p.id;
+                btn.dataset.name = p.name;
+                btn.dataset.price = p.price;
+                btn.dataset.max = p.quantity;
+
+                // Show product image if available
+                const imgBox = document.getElementById('detail-image');
+                if (p.image) {
+                    imgBox.innerHTML = `<img src="${p.image}" alt="${p.name}" loading="lazy" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+                } else {
+                    imgBox.innerHTML = '<i class="fas fa-box-open" style="font-size:64px;color:#cbd5e1;"></i>';
+                }
+
+                btn.addEventListener('click', function() {
+                    const qty = parseInt(document.getElementById('quantity_input').value, 10) || 1;
+                    if (window.addToCart) {
+                        addToCart({ id: p.id, name: p.name, price: p.price, image: p.image || '' , max_quantity: p.quantity }, qty);
+                    } else if (window.addToCartFromButton) {
+                        addToCartFromButton(btn);
+                        if (qty > 1) {
+                            setTimeout(() => setQuantity(p.id, qty), 50);
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to load product data', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProductDetail);
+    </script>
+
+    <script defer src="assets/js/main.js"></script>
+</body>
+</html>

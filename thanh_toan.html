@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - TechShop</title>
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="main-header-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo logo-compact" aria-label="TechShop">
+                <svg class="logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="0" y="0" width="24" height="24" rx="5" fill="#111827" />
+                    <path d="M6 12h12" stroke="#3fc0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>TechShop</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container" style="max-width:700px; margin:2rem auto;">
+        <h1>Thanh Toán</h1>
+        <p>Đây là giao diện thanh toán demo tĩnh; quy trình thanh toán thực tế cần server-side và cổng thanh toán. Ở phiên bản demo này, dùng Firebase để xác thực và lưu đơn hàng vào Firestore.</p>
+
+        <div class="checkout-summary">
+            <p>Tổng tiền: <strong id="checkout-total">₫0</strong></p>
+            <div style="margin-top:1rem;">
+                <button id="btn-place-order" class="btn btn-primary">Thanh Toán & Ghi Đơn</button>
+                <span id="checkout-msg" style="margin-left:12px;color:#16a34a;"></span>
+            </div>
+        </div>
+
+        <!-- Firebase SDK + helper -->
+        <script>
+            // window.FIREBASE_CONFIG = { ... }  <-- paste your config here
+        </script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+        <script src="/assets/js/firebase-auth.js"></script>
+
+        <script>
+            function formatPrice(v) { return '₫' + Number(v).toLocaleString('vi-VN'); }
+            document.addEventListener('DOMContentLoaded', function() {
+                const totalEl = document.getElementById('checkout-total');
+                if (window.getCartTotal) {
+                    totalEl.textContent = formatPrice(getCartTotal());
+                }
+
+                const placeBtn = document.getElementById('btn-place-order');
+                const msg = document.getElementById('checkout-msg');
+                if (!window.fbOnAuthChange) {
+                    msg.textContent = 'Firebase chưa cấu hình.';
+                    return;
+                }
+
+                // Ensure user is authenticated before allowing order
+                fbOnAuthChange(user => {
+                    if (!user) {
+                        // redirect to login
+                        window.location.href = '/auth/login.html';
+                    }
+                });
+
+                placeBtn.addEventListener('click', async function() {
+                    // Build order object from client cart
+                    const cart = getCart();
+                    const items = Object.values(cart).map(it => ({ id: it.id, name: it.name, price: it.price, quantity: it.quantity }));
+                    const total = getCartTotal();
+                    const order = { items, total, status: 'pending' };
+                    try {
+                        const orderId = await fbSaveOrder(order);
+                        msg.textContent = 'Đã ghi đơn, mã: ' + orderId;
+                        // Clear cart
+                        localStorage.removeItem('techshop_cart_v1');
+                        updateCartBadge();
+                        // Redirect to success page
+                        setTimeout(() => window.location.href = '/dat_hang_thanh_cong.html', 1000);
+                    } catch (e) {
+                        msg.style.color = '#dc2626';
+                        msg.textContent = 'Lưu đơn thất bại: ' + (e.message || e);
+                    }
+                });
+            });
+        </script>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const totalEl = document.getElementById('checkout-total');
+            if (window.getCartTotal) {
+                totalEl.textContent = '₫' + Number(getCartTotal()).toLocaleString('vi-VN');
+            }
+        });
+    </script>
+
+    <script defer src="assets/js/main.js"></script>
+</body>
+</html>
